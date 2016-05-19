@@ -59,10 +59,19 @@ function follow (url, ms) {
   var protocol = opts.protocol === 'https:' ? https : http
 
   if (opts.protocol === 'https:') {
+
     opts.agent = spdy.createAgent({
       host: opts.hostname || opts.host,
       port: opts.port || 443
     })
+
+    // If a custom agent is used, by default all connection-level
+    // errors will result in an uncaught exception
+    // (See https://github.com/indutny/node-spdy#usage)
+    opts.agent.on( 'error', function( error ) {
+      this.emit('error', error)
+    })
+
   }
 
   var req = protocol.request(opts, function (res) {
