@@ -100,7 +100,12 @@ function follow (url, ms) {
       default:
         diff = Date.now() - start
         console.log('Trace finished in %s using %s', chalk.cyan(diff + ' ms'), chalk.cyan(hops + ' hop' + (hops > 1 ? 's' : '')))
-        process.exit(0)
+        // For SPDY/H2 connections the agent needs to be closed,
+        // to close all remaining TCP connections
+        if(opts.agent) {
+          opts.agent.close()
+        }
+        break
     }
   })
 
