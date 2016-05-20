@@ -2,6 +2,9 @@ var assert = require('assert')
 var Trace = require('..')
 
 suite('URL Shortener', function () {
+  
+  this.timeout( 10000 )
+  
   suite('Twitter (t.co)', function () {
     test('should receive 3xx redirect for "https://t.co/fW61qZgOWm"', function (done) {
       new Trace('https://t.co/fW61qZgOWm')
@@ -21,7 +24,13 @@ suite('URL Shortener', function () {
   })
 
   suite('New York Times (nyti.ms)', function () {
-    test('should see tracking cookies from "nyti.ms/1QETHgV"')
+    test('should see tracking cookies from "nyti.ms/1QETHgV"', function (done) {
+      new Trace('nyti.ms/1QETHgV')
+        .resume().once('end', function () {
+          assert.equal(this.statusCode, 200)
+          done()
+        })
+    })
   })
 
   suite('Bit.ly', function () {
